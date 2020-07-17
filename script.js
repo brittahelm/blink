@@ -32,18 +32,106 @@ function drawEye(startX, startY, eyeColor) {
 }
 
 function drawClosedEye(startX, startY) {
+
+    ctx.strokeStyle = 'black';
+    ctx.fillStyle = 'black';
+    ctx.beginPath();
+    ctx.moveTo(startX, startY);
+    ctx.quadraticCurveTo(startX+50, startY+50, startX+100, startY);
+    ctx.lineTo(startX+100, startY-27);
+    ctx.lineTo(startX, startY-27);
+    ctx.closePath();
+    ctx.stroke();
+    ctx.fill();
+
     ctx.beginPath();
     ctx.strokeStyle = 'white';
     ctx.lineWidth = 2;
     ctx.moveTo(startX, startY);
     ctx.quadraticCurveTo(startX+50, startY+50, startX+100, startY);
     ctx.stroke();
-    ctx.lineWidth = 1;
-    ctx.quadraticCurveTo(startX+50, startY-50, startX, startY);
+}
+
+
+function drawQuarterOpenEye(startX, startY) {
+    ctx.strokeStyle = 'black';
+    ctx.fillStyle = 'black';
+    ctx.beginPath();
+    ctx.moveTo(startX, startY);
+    ctx.quadraticCurveTo(startX+50, startY+25, startX+100, startY);
+    ctx.lineTo(startX+100, startY-27);
+    ctx.lineTo(startX, startY-27);
+    ctx.closePath();
     ctx.stroke();
-    ctx.quadraticCurveTo(startX+50, startY+35, startX+100, startY);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 2;
+    ctx.moveTo(startX, startY);
+    ctx.quadraticCurveTo(startX+50, startY+25, startX+100, startY);
     ctx.stroke();
 }
+
+
+function drawHalfOpenEye(startX, startY) {
+    ctx.strokeStyle = 'black';
+    ctx.fillStyle = 'black';
+    ctx.beginPath();
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(startX+100, startY);
+    ctx.lineTo(startX+100, startY-27);
+    ctx.lineTo(startX, startY-27);
+    ctx.closePath();
+    ctx.stroke();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 2;
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(startX+100, startY);
+    ctx.stroke();
+}
+
+
+function drawThreeQuarterOpenEye(startX, startY) {
+    ctx.strokeStyle = 'black';
+    ctx.fillStyle = 'black';
+    ctx.beginPath();
+    ctx.moveTo(startX, startY);
+    ctx.quadraticCurveTo(startX+50, startY-25, startX+100, startY);
+    ctx.lineTo(startX+100, startY-27);
+    ctx.lineTo(startX, startY-27);
+    ctx.closePath();
+    ctx.stroke();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 2;
+    ctx.moveTo(startX, startY);
+    ctx.quadraticCurveTo(startX+50, startY-25, startX+100, startY);
+    ctx.stroke();
+}
+
+let drawingSteps = [drawClosedEye, drawQuarterOpenEye, drawHalfOpenEye, drawThreeQuarterOpenEye, drawEye];
+
+
+let intervalID = setTimeout(function() { 
+    drawClosedEye;
+ }, 1000);
+
+
+
+
+function closeEye(startX, startY) {
+    setTimeout(drawClosedEye(startX, startY), 5000);
+}
+
+
+
+let moves = 0;
 
 
 // shuffle items in array randomly
@@ -102,13 +190,17 @@ function fillBoard () {
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 4; j++) {
             let eye = eyesMatrix[i][j];
-            drawEye(x, y, eyesMatrix[i][j].color);
+            eye.x = 50+(125*j);
+            eye.y = 175+(100*i);
+            drawEye(x, y, eye.color);
+            drawClosedEye(x, y);
             x += 125;
         }
         x = 50;
         y += 100;
     }
 }
+
 
 
 fillBoard();
@@ -159,8 +251,23 @@ function checkClickPosition(mouseX, mouseY) {
 }
 
 
-let firstEye;
-let secondEye;
+function checkIfWon() {
+    let won = true;
+    let i; 
+    let j;
+    for (i = 0; i < 4; i++) {
+        for (j = 0; j < 4; j++) {
+            let eye = eyesMatrix[i][j];
+            if (eyesMatrix[i][j].found === false) {
+                won = false;
+            }
+        }
+    }
+    return won;
+}
+
+let firstEye = eyesMatrix[0][0];
+let secondEye = eyesMatrix[0][0];
 
 canvas.addEventListener ('click', function(event){
     let canvasLeft = canvas.offsetLeft + canvas.clientLeft;
@@ -178,19 +285,37 @@ canvas.addEventListener ('click', function(event){
         let matrixRow = matrixPosition[0];
         let matrixColumn = matrixPosition[1];
         
+        if (!firstEye.found & canvas.classList.contains('move-started')) {
+            closeEye(firstEye.x, firstEye.y);
+            closeEye(secondEye.x, secondEye.y);
+        }
 
         if (canvas.classList.contains('move-started')) {
             firstEye = eyesMatrix[matrixRow][matrixColumn];
-            
+            drawEye(firstEye.x, firstEye.y, firstEye.color);
+            moves ++;
         }
         else {
             secondEye = eyesMatrix[matrixRow][matrixColumn];
-            if (firstEye.color === secondEye.color) {
+            drawEye(secondEye.x, secondEye.y, secondEye.color);
+            if (firstEye.color === secondEye.color && firstEye != secondEye) {
                 console.log('match');
+                firstEye.found = true;
+                secondEye.found = true;
+                console.log(firstEye);
+                console.log(secondEye);
+                if (checkIfWon() === true) {
+                    console.log('you have won!');
+                };
             }
         }
-
     }
+    ctx.beginPath();
+    ctx.clearRect(0, 0, 150, 100);
+    ctx.fillStyle = 'white';
+    ctx.font = "20px Lucida Console";
+    ctx.beginPath();
+    ctx.fillText(`moves: ${moves}`, 50, 50);
 })
 
 

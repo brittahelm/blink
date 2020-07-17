@@ -4,5 +4,6 @@ class Eye {
     this.y = 50;
     this.color = color;
     this.closed = true;
+    this.found = false;
     }
 }
