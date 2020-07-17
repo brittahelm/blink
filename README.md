@@ -25,7 +25,7 @@ blink is a classic memory game where the player has to match pairs of eyes with 
 - class Eye with methods to draw open, draw closed
 - array of *16* eyes
 - function to draw board with randomly placed eyes on it
-- function to 
+- function to check for pairs, close eyes or leave open
 
 ## States y States Transitions
 
