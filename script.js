@@ -2,12 +2,17 @@ let body = document.querySelector('body');
 let eyeLogo = document.querySelector('#eye-logo');
 let startScreen = document.querySelector('.splash-screen')
 
+let backgroundMusic = new Audio();
+let clickSound = new Audio("/click.mp3");
+
 // start game
 eyeLogo.addEventListener('click', function(event){
+    clickSound.play();
     body.removeChild(startScreen);
     fillBoard();
+    backgroundMusic.src = "/snowflake.mp3"
+    backgroundMusic.play();
 })
-// fillBoard();
 
 
 let canvas = document.querySelector('.blinkCanvas')
@@ -227,7 +232,6 @@ function checkClickPosition(mouseX, mouseY) {
 
 
 // go through all eyes to see if they were found
-
 function checkIfWon() {
     let won = true;
     let i; 
@@ -249,6 +253,9 @@ function checkIfWon() {
 
 // change from main game to game over screen
 function endGame() {
+    backgroundMusic.pause();
+    backgroundMusic.src ="/star.mp3";
+    backgroundMusic.play();
     body.removeChild(canvas);
     let endScreen = document.createElement('div');
     endScreen.classList.add('game-over-screen');
@@ -262,6 +269,7 @@ function endGame() {
     endScreen.appendChild(eyeLogoEnd);
 
     eyeLogoEnd.addEventListener('click', function(event){
+        clickSound.play();
         window.location.reload(false);
     })
 }
@@ -306,12 +314,13 @@ canvas.addEventListener ('click', function(event){
             firstEye = eyesMatrix[matrixRow][matrixColumn];
             
             openEye(firstEye.x, firstEye.y, firstEye.color);
-            // drawEye(firstEye.x, firstEye.y, firstEye.color);
+            clickSound.play();
             moves ++;
         }
         else {
             secondEye = eyesMatrix[matrixRow][matrixColumn];
             openEye(secondEye.x, secondEye.y, secondEye.color);
+            clickSound.play();
             console.log(openEye);
             if (firstEye.color === secondEye.color && firstEye != secondEye) {
                 firstEye.found = true;
