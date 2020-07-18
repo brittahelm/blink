@@ -1,5 +1,34 @@
 body {
     background-color: black;
     text-align: center;
+    color: white;
+    font-family: 'Montserrat';
 }
 
+h1 {
+    font-size: 80px;
+    margin: 5px;
+    padding: 0;
+}
+
+h2 {
+    font-size: 25px;
+    margin: 5px;
+    padding: 0;
+}
+
+.splash-screen {
+    margin-top: 100px;
+}
+
+.game-over-screen {
+    margin-top: 200px;
+}
+
+#eye-logo {
+    width: 150px;
+}
+
+.eye-logo-end {
+    width: 150px;
+}

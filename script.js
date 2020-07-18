@@ -1,12 +1,22 @@
-let canvas = document.getElementById('blinkCanvas')
+let body = document.querySelector('body');
+let eyeLogo = document.querySelector('#eye-logo');
+let startScreen = document.querySelector('.splash-screen')
+
+// start game
+eyeLogo.addEventListener('click', function(event){
+    body.removeChild(startScreen);
+    fillBoard();
+})
+// fillBoard();
+
+
+let canvas = document.querySelector('.blinkCanvas')
 canvas.style.border = '3px solid black'
 
 let ctx = canvas.getContext('2d')
 
 ctx.fillStyle = 'black';
 ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-
 
 // draw open eye of different colors
 function drawEye(startX, startY, eyeColor) {
@@ -58,7 +68,6 @@ function drawClosedEye(startX, startY, middleY) {
 }
 
 
-
 function closeEye(startX, startY) {
     let i = 0;
     let droop = startY-50;
@@ -72,14 +81,14 @@ function closeEye(startX, startY) {
         droop += 1;
       }
     }
-  } 
+} 
 
-  function closeEyeSlowly(startX, startY) {
+function closeEyeSlowly(startX, startY) {
       setTimeout(frame2, 1000);
       function frame2() {
           closeEye(startX, startY);
       }
-  }
+}
 
 function openEye(startX, startY, color) {
     // let i = 0;
@@ -171,8 +180,6 @@ function fillBoard () {
 
 
 
-fillBoard();
-
 
 
 
@@ -237,8 +244,40 @@ function checkIfWon() {
 }
 
 
-// click on cards, finish move after two cards, leave open if pair, close if not
 
+
+
+// change from main game to game over screen
+function endGame() {
+    body.removeChild(canvas);
+    let endScreen = document.createElement('div');
+    endScreen.classList.add('game-over-screen');
+    endScreen.innerHTML = "<h2>Well played.</h2><p>You won in x moves.<br>Do you want to try again?<br><br>Click on the eye.</p>";
+    body.appendChild(endScreen);
+    
+    let eyeLogoEnd = document.createElement('img');
+    eyeLogoEnd.src = "eye2.png";
+    eyeLogoEnd.classList.add('eye-logo-end');
+    endScreen.appendChild(eyeLogoEnd);
+
+    eyeLogoEnd.addEventListener('click', function(event){
+        window.location.reload(false);
+    })
+}
+
+// change game with slight delay after last pair was found
+function endGameSlowly() {
+    setTimeout(frame3, 1000);
+    function frame3() {
+        endGame();
+    }
+}
+
+
+
+
+
+// click on cards, finish move after two cards, leave open if pair, close if not
 let firstEye = eyesMatrix[0][0];
 let secondEye = eyesMatrix[0][0];
 
@@ -272,11 +311,13 @@ canvas.addEventListener ('click', function(event){
         else {
             secondEye = eyesMatrix[matrixRow][matrixColumn];
             openEye(secondEye.x, secondEye.y, secondEye.color);
+            console.log(openEye);
             if (firstEye.color === secondEye.color && firstEye != secondEye) {
                 firstEye.found = true;
                 secondEye.found = true;
                 if (checkIfWon() === true) {
                     console.log('you have won!');
+                    endGameSlowly();
                 };
             }
             else {
@@ -289,7 +330,7 @@ canvas.addEventListener ('click', function(event){
     ctx.beginPath();
     ctx.clearRect(50, 525, 150, 100);
     ctx.fillStyle = 'white';
-    ctx.font = "25px Lucida Console";
+    ctx.font = "20px Montserrat";
     ctx.beginPath();
     ctx.fillText(`moves: ${moves}`, 50, 550);
 })

@@ -5,9 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet"> 
 </head>
 <body>
-    <canvas id="blinkCanvas" class="" width = "575" height = "600"></canvas>
+
+    
+    <div class="splash-screen">
+        <h1>blink</h1>
+        <h2>(Don't miss it.)</h2>
+        <img id="eye-logo" src="eye.png" alt="blink logo">
+        <p>Click on the eyes to find matching pairs.<br>Use as few moves as possible.<br> Don't fall asleep.<br><br>Click on the eye to start.</p>
+    </div>
+   
+
+    
+    
+    <canvas class="blinkCanvas" class="" width = "575" height = "600"></canvas>
+    
+    
+
+    <!--
+    <div class="game-over-screen">
+        <h2>Well played.</h2>
+        <p>You won in x moves.<br>Do you want to try again?</p>
+    </div>
+    -->
+
     <script src="eye.js"></script>
     <script src="script.js"></script>
 </body>
