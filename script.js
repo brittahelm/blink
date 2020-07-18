@@ -3,15 +3,19 @@ let eyeLogo = document.querySelector('#eye-logo');
 let startScreen = document.querySelector('.splash-screen')
 
 let backgroundMusic = new Audio();
+backgroundMusic.loop = "true";
 let clickSound = new Audio("/click.mp3");
 
 // start game
 eyeLogo.addEventListener('click', function(event){
     clickSound.play();
-    body.removeChild(startScreen);
-    fillBoard();
-    backgroundMusic.src = "/snowflake.mp3"
-    backgroundMusic.play();
+    setTimeout(startGame, 1000);
+      function startGame() {
+        body.removeChild(startScreen);
+        fillBoard();
+        backgroundMusic.src = "/snowflake.mp3"
+        backgroundMusic.play();
+      }
 })
 
 
@@ -270,7 +274,11 @@ function endGame() {
 
     eyeLogoEnd.addEventListener('click', function(event){
         clickSound.play();
-        window.location.reload(false);
+
+        setTimeout(startOver, 1000);
+        function startOver() {
+            window.location.reload(false);
+      }
     })
 }
 
