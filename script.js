@@ -252,7 +252,8 @@ function endGame() {
     body.removeChild(canvas);
     let endScreen = document.createElement('div');
     endScreen.classList.add('game-over-screen');
-    endScreen.innerHTML = "<h2>Well played.</h2><p>You won in x moves.<br>Do you want to try again?<br><br>Click on the eye.</p>";
+    let endText = `<h2>Well played.</h2><p>You won in ${moves} moves.<br>Do you want to try again?<br><br>Click on the eye.</p>`
+    endScreen.innerHTML = endText;
     body.appendChild(endScreen);
     
     let eyeLogoEnd = document.createElement('img');
