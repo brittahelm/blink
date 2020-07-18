@@ -115,19 +115,27 @@ function drawThreeQuarterOpenEye(startX, startY) {
     ctx.stroke();
 }
 
-let drawingSteps = [drawClosedEye, drawQuarterOpenEye, drawHalfOpenEye, drawThreeQuarterOpenEye, drawEye];
-
-
-let intervalID = setTimeout(function() { 
-    drawClosedEye;
- }, 1000);
-
-
-
 
 function closeEye(startX, startY) {
-    setTimeout(drawClosedEye(startX, startY), 5000);
-}
+    let i = 0;
+    let intervalID = setInterval(frame, 1000);
+    function frame() {
+      if (i === 3) {
+        clearInterval(intervalID);
+      } else {
+        drawClosedEye(startX, startY);
+        i++;
+      }
+    }
+  } 
+
+
+
+
+//  function closeEye(startX, startY) {
+//     drawClosedEye(startX, startY);
+// }
+
 
 
 
@@ -266,6 +274,9 @@ function checkIfWon() {
     return won;
 }
 
+
+
+
 let firstEye = eyesMatrix[0][0];
 let secondEye = eyesMatrix[0][0];
 
@@ -284,11 +295,7 @@ canvas.addEventListener ('click', function(event){
         
         let matrixRow = matrixPosition[0];
         let matrixColumn = matrixPosition[1];
-        
-        if (!firstEye.found & canvas.classList.contains('move-started')) {
-            closeEye(firstEye.x, firstEye.y);
-            closeEye(secondEye.x, secondEye.y);
-        }
+    
 
         if (canvas.classList.contains('move-started')) {
             firstEye = eyesMatrix[matrixRow][matrixColumn];
@@ -308,14 +315,18 @@ canvas.addEventListener ('click', function(event){
                     console.log('you have won!');
                 };
             }
+            else {
+                closeEye(firstEye.x, firstEye.y);
+                closeEye(secondEye.x, secondEye.y);
+            }
         }
     }
     ctx.beginPath();
-    ctx.clearRect(0, 0, 150, 100);
+    ctx.clearRect(50, 525, 150, 100);
     ctx.fillStyle = 'white';
-    ctx.font = "20px Lucida Console";
+    ctx.font = "25px Lucida Console";
     ctx.beginPath();
-    ctx.fillText(`moves: ${moves}`, 50, 50);
+    ctx.fillText(`moves: ${moves}`, 50, 550);
 })
 
 
