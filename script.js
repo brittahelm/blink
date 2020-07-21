@@ -1,31 +1,92 @@
 let body = document.querySelector('body');
 let eyeLogo = document.querySelector('#eye-logo');
-let startScreen = document.querySelector('.splash-screen')
+let startScreen = document.querySelector('.splash-screen');
+
+let moves = 0;
+
+let canvas = document.createElement('canvas');
+canvas.width = "575";
+canvas.height = "600";
+
+let firstEye;
+let secondEye;
+
+let preventClick = false;
+
+let soundOn = true;
 
 let backgroundMusic = new Audio();
 backgroundMusic.loop = "true";
 let clickSound = new Audio("/click.mp3");
+clickSound.volume = 0.1;
+
+
+function playClickSound() {
+    if (soundOn === true) {
+        clickSound.play();
+    }
+}
+
 
 // start game
 eyeLogo.addEventListener('click', function(event){
     clickSound.play();
-    setTimeout(startGame, 1000);
+    setTimeout(startGame, 500);
       function startGame() {
         body.removeChild(startScreen);
+        body.appendChild(canvas);
+        bringInEyes();
         fillBoard();
-        backgroundMusic.src = "/snowflake.mp3"
+        backgroundMusic.src = "/snowflake.mp3";
         backgroundMusic.play();
       }
-})
+});
 
-
-let canvas = document.querySelector('.blinkCanvas')
-canvas.style.border = '3px solid black'
-
-let ctx = canvas.getContext('2d')
+let ctx = canvas.getContext('2d');
 
 ctx.fillStyle = 'black';
 ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+
+// show number of moves on screen
+function displayMoves() {
+    ctx.beginPath();
+    ctx.clearRect(50, 525, 150, 100);
+    ctx.fillStyle = 'white';
+    ctx.font = "20px Montserrat";
+    ctx.beginPath();
+    ctx.fillText(`moves: ${moves}`, 50, 550);
+}
+
+
+// show sound switch on screen
+function displaySoundSwitch(state) {
+    ctx.beginPath();
+    ctx.clearRect(430, 525, 150, 100);
+    ctx.fillStyle = 'white';
+    ctx.font = "12px Montserrat";
+    ctx.beginPath();
+    ctx.fillText(`turn sound ${state}`, 430, 550);
+}
+
+
+// create sound off/on switch
+function turnSoundOnOff() {
+    if (soundOn === true) {
+        displaySoundSwitch('on');
+        backgroundMusic.pause();
+        soundOn = false;
+    }
+
+    else {
+        displaySoundSwitch('off');
+        backgroundMusic.play();
+        soundOn = true;
+    }
+}
+
+
+
 
 // draw open eye of different colors
 function drawEye(startX, startY, eyeColor) {
@@ -77,49 +138,6 @@ function drawClosedEye(startX, startY, middleY) {
 }
 
 
-function closeEye(startX, startY) {
-    let i = 0;
-    let droop = startY-50;
-    let intervalID = setInterval(frame, 15);
-    function frame() {
-      if (i === 100) {
-        clearInterval(intervalID);
-      } else {
-        drawClosedEye(startX, startY, droop);
-        i++;
-        droop += 1;
-      }
-    }
-} 
-
-function closeEyeSlowly(startX, startY) {
-      setTimeout(frame2, 1000);
-      function frame2() {
-          closeEye(startX, startY);
-      }
-}
-
-function openEye(startX, startY, color) {
-    // let i = 0;
-    // let droop = startY+50;
-    // let intervalID = setInterval(frame, 15);
-    // function frame() {
-    //   if (i === 100) {
-    //     clearInterval(intervalID);
-    //   } else {
-    //     drawEye(startX, startY, color);
-    //     drawClosedEye(startX, startY, droop);
-    //     i++;
-    //     droop -= 1;
-    //   }
-    // }
-
-    drawEye(startX, startY, color);
-}
-
-let moves = 0;
-
-
 // shuffle items in array randomly
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -167,8 +185,83 @@ function arrangeIntoMatrix(arr) {
 let eyesMatrix = arrangeIntoMatrix(eyes);
 
 
+
+// animate eye from open to closed
+function closeEye(startX, startY) {
+    let i = 0;
+    let droop = startY-50;
+    let intervalID = setInterval(drawNextEyeState, 5);
+    function drawNextEyeState() {
+      if (i === 100) {
+        clearInterval(intervalID);
+      } else {
+        drawClosedEye(startX, startY, droop);
+        i++;
+        droop += 1;
+      }
+    }
+} 
+
+// add 1 sec delay before eye starts closing
+function closeEyeSlowly(startX, startY) {
+
+    let closingPos = checkClickPosition(startX, startY);
+
+    if (eyesMatrix[closingPos[0]][closingPos[1]].closing === false) {
+
+    eyesMatrix[closingPos[0]][closingPos[1]].closing = true;
+
+    preventClick = true;
+
+    setTimeout(startClosingEye, 1000);
+    function startClosingEye() {
+        
+        eyesMatrix[closingPos[0]][closingPos[1]].closing = false;
+        preventClick = false;
+        closeEye(startX, startY);
+    }
+    }
+}
+
+
+
+function openEye(startX, startY, color) {
+    drawEye(startX, startY, color);
+}
+
+
+
+function bringInEyes() {
+    
+    let x = 50;
+    let y = 175;
+    let i = 1;
+
+    let intervalID = setInterval(bringInLid, 50);
+    function bringInLid() {
+        if (i === 17) {
+            clearInterval(intervalID);
+        }
+        else {
+            drawClosedEye(x, y, y+50);
+            x+= 125;
+            if (i%4 === 0) {
+                x = 50;
+                y += 100;
+            }
+            i++;
+        }
+    }
+}
+
+
+
 // place eyes on board
 function fillBoard () {
+
+
+    setTimeout(fillEyes, 800);
+    function fillEyes() {
     let x = 50;
     let y = 175;
     let i; 
@@ -185,10 +278,96 @@ function fillBoard () {
         x = 50;
         y += 100;
     }
+    displayMoves();
+    displaySoundSwitch('off');
+}
+}
+
+
+function drawRowOfLids (y) {
+    let x = 50; 
+    
+        for (let i = 0; i<4; i++) {
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.quadraticCurveTo(x+50, y+50, x+100, y);
+        ctx.stroke();
+         x += 125;
+     }
+}
+
+
+function dropEyes() {
+    let i = 0;
+    let y = 175;
+    
+    setTimeout(dropRows, 1500);
+    function dropRows() {
+    let intervalID = setInterval(dropRow, 20);
+    function dropRow () {
+        if (y === canvas.height) {
+            clearInterval(intervalID);
+        }
+        else {
+            ctx.clearRect(0, 0, canvas.width, y+30);
+            drawRowOfLids(y);
+            y += 10;
+        }
+    }
+    }
 }
 
 
 
+function drawUnicolorEyes() {  
+    let i = 0;
+    let j = 0;
+    let k = 0;
+    let x = 50;
+    let y = 175;
+    let randomColor = eyeColors[Math.floor(Math.random()*8)];
+
+    setTimeout(drawRandomEyes, 500);
+
+    function drawRandomEyes() {
+    for (i = 0; i < 4; i++) {
+        for (j = 0; j < 4; j++) {
+            drawEye(x, y, randomColor);
+            x += 125;
+        }
+        x = 50;
+        y += 100;
+    }
+    y += 10;
+    }
+}
+
+function closeAllEyes() {
+    let i = 0;
+    let j = 0;
+    let k = 0;
+    let x = 50;
+    let y = 175;
+
+    for (i = 0; i < 4; i++) {
+        for (j = 0; j < 4; j++) {
+            closeEyeSlowly(x, y);
+            x += 125;
+        }
+        x = 50;
+        y += 100;
+    }
+    y += 10;
+}
+
+
+function endAnimationEyes() {
+    drawUnicolorEyes();
+    closeAllEyes();
+    dropEyes();
+}
 
 
 
@@ -197,9 +376,15 @@ function checkClickPosition(mouseX, mouseY) {
     let row;
     let column;
 
+
+    if (mouseX >=430 && mouseX <= 550 && mouseY >= 525 && mouseY <= 575) {
+        turnSoundOnOff();
+        return null;
+    }
+
     if (mouseX >= 50 && mouseX <= 150) {
         column = 0;
-;    }
+    }
     else if (mouseX >= 175 && mouseX <= 275) {
         column = 1;
     }
@@ -216,7 +401,7 @@ function checkClickPosition(mouseX, mouseY) {
     
     if (mouseY >= 150 && mouseY <= 200) {
         row = 0;
-;    }
+    }
     else if (mouseY >= 250 && mouseY <= 300) {
         row = 1;
     }
@@ -243,7 +428,7 @@ function checkIfWon() {
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 4; j++) {
             let eye = eyesMatrix[i][j];
-            if (eyesMatrix[i][j].found === false) {
+            if (eye.found === false) {
                 won = false;
             }
         }
@@ -259,11 +444,13 @@ function checkIfWon() {
 function endGame() {
     backgroundMusic.pause();
     backgroundMusic.src ="/star.mp3";
-    backgroundMusic.play();
+    if (soundOn === true) {
+        backgroundMusic.play();
+    }
     body.removeChild(canvas);
     let endScreen = document.createElement('div');
     endScreen.classList.add('game-over-screen');
-    let endText = `<h2>Well played.</h2><p>You won in ${moves} moves.<br>Do you want to try again?<br><br>Click on the eye.</p>`
+    let endText = `<h2>Well played.</h2><p>You won in ${moves} moves.<br>Do you want to try again?<br><br>Click on the eye.</p>`;
     endScreen.innerHTML = endText;
     body.appendChild(endScreen);
     
@@ -273,30 +460,26 @@ function endGame() {
     endScreen.appendChild(eyeLogoEnd);
 
     eyeLogoEnd.addEventListener('click', function(event){
-        clickSound.play();
+        playClickSound();
 
         setTimeout(startOver, 1000);
         function startOver() {
             window.location.reload(false);
       }
-    })
+    });
 }
 
 // change game with slight delay after last pair was found
 function endGameSlowly() {
-    setTimeout(frame3, 1000);
+    setTimeout(frame3, 2800);
     function frame3() {
         endGame();
     }
 }
 
 
-
-
-
+let moveStarted = false;
 // click on cards, finish move after two cards, leave open if pair, close if not
-let firstEye = eyesMatrix[0][0];
-let secondEye = eyesMatrix[0][0];
 
 canvas.addEventListener ('click', function(event){
     let canvasLeft = canvas.offsetLeft + canvas.clientLeft;
@@ -306,51 +489,54 @@ canvas.addEventListener ('click', function(event){
   
     let matrixPosition = checkClickPosition(x, y);
 
-    let matrixRow = matrixPosition[0];
-    let matrixColumn = matrixPosition[1];
+    let matrixRow;
+    let matrixColumn;
     
-    if (matrixPosition != null && eyesMatrix[matrixRow][matrixColumn].found === false) {
-        
-        canvas.classList.toggle('move-started');
-        
-        let matrixRow = matrixPosition[0];
-        let matrixColumn = matrixPosition[1];
-        
-        
+    if (matrixPosition != null) {
 
-        if (canvas.classList.contains('move-started')) {
-            firstEye = eyesMatrix[matrixRow][matrixColumn];
+        matrixRow = matrixPosition[0];
+        matrixColumn = matrixPosition[1];
+
+        if (eyesMatrix[matrixRow][matrixColumn].found === false && preventClick === false) {
+
+            moveStarted = !moveStarted;
+
+            if (moveStarted) {
+                firstEye = eyesMatrix[matrixRow][matrixColumn];
             
-            openEye(firstEye.x, firstEye.y, firstEye.color);
-            clickSound.play();
-            moves ++;
-        }
-        else {
-            secondEye = eyesMatrix[matrixRow][matrixColumn];
-            openEye(secondEye.x, secondEye.y, secondEye.color);
-            clickSound.play();
-            console.log(openEye);
-            if (firstEye.color === secondEye.color && firstEye != secondEye) {
-                firstEye.found = true;
-                secondEye.found = true;
-                if (checkIfWon() === true) {
-                    console.log('you have won!');
-                    endGameSlowly();
-                };
+                openEye(firstEye.x, firstEye.y, firstEye.color);
+                firstEye.state = 'open';
+                playClickSound();
+                moves ++;
+            }
+            else if (firstEye != eyesMatrix[matrixRow][matrixColumn]) {
+                secondEye = eyesMatrix[matrixRow][matrixColumn];
+
+                openEye(secondEye.x, secondEye.y, secondEye.color);
+                secondEye.state = 'open';
+                playClickSound();
+
+                if (firstEye.color === secondEye.color && firstEye != secondEye) {
+                    firstEye.found = true;
+                    secondEye.found = true;
+                    if (checkIfWon() === true) {
+                        endAnimationEyes();
+                        endGameSlowly();
+                    };
+                }
+                else  {
+                    closeEyeSlowly(firstEye.x, firstEye.y);
+                    closeEyeSlowly(secondEye.x, secondEye.y);
+                }
+            
             }
             else {
-                closeEyeSlowly(firstEye.x, firstEye.y);
-                closeEyeSlowly(secondEye.x, secondEye.y);
+                moveStarted = true;
             }
         }
-        
     }
-    ctx.beginPath();
-    ctx.clearRect(50, 525, 150, 100);
-    ctx.fillStyle = 'white';
-    ctx.font = "20px Montserrat";
-    ctx.beginPath();
-    ctx.fillText(`moves: ${moves}`, 50, 550);
+
+    displayMoves();
 })
 
 
