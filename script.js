@@ -3,6 +3,7 @@ let eyeLogo = document.querySelector('#eye-logo');
 let startScreen = document.querySelector('.splash-screen');
 
 let moves = 0;
+let highscore;
 
 let canvas = document.createElement('canvas');
 canvas.width = "575";
@@ -26,7 +27,6 @@ let backgroundMusic = new Audio();
 backgroundMusic.loop = "true";
 let clickSound = new Audio("click.mp3");
 clickSound.volume = 0.1;
-
 
 
 // make sure click is only played when sound is turned on
@@ -480,7 +480,11 @@ function endGame() {
     body.removeChild(canvas);
     let endScreen = document.createElement('div');
     endScreen.classList.add('game-over-screen');
-    let endText = `<h2>Well played.</h2><p>You won in ${moves} moves.<br>Do you want to try again?<br><br>Click on the eye.</p>`;
+    let highscoreText = '';
+    if (localStorage.getItem('highscore')) {
+        highscoreText = `<br>Your best game was ${highscore} moves.`
+    }
+    let endText = `<h2>Well played.</h2><p>You won in ${moves} moves.${highscoreText}<br>Do you want to try again?<br><br>Click on the eye.</p>`;
     endScreen.innerHTML = endText;
     body.appendChild(endScreen);
     
@@ -499,12 +503,23 @@ function endGame() {
     });
 }
 
+
 // end game with slight delay after last pair was found
 function endGameSlowly() {
     setTimeout(frame3, 2800);
     function frame3() {
         endGame();
     }
+
+    if (localStorage.getItem('highscore')) {
+    highscore = localStorage.getItem('highscore');
+    if (moves < highscore) {
+        localStorage.setItem('highscore', moves);
+        }
+    }
+
+console.log(localStorage.getItem('highscore'));
+
 }
 
 
@@ -571,6 +586,11 @@ canvas.addEventListener ('click', function(event){
 
     displayMoves();
 })
+
+
+
+
+
 
 
 
