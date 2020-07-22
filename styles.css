@@ -25,6 +25,15 @@ h2 {
     margin-top: 200px;
 }
 
+@media only screen and (max-width: 600px) {
+    .splash-screen {
+      margin-top: 50px;
+    }
+    .game-over-screen {
+        margin-top: 100px;
+    }
+  }
+
 #eye-logo {
     width: 150px;
 }
