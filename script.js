@@ -17,7 +17,7 @@ let soundOn = true;
 
 let backgroundMusic = new Audio();
 backgroundMusic.loop = "true";
-let clickSound = new Audio("/click.mp3");
+let clickSound = new Audio("click.mp3");
 clickSound.volume = 0.1;
 
 
@@ -38,7 +38,7 @@ eyeLogo.addEventListener('click', function(event){
         body.appendChild(canvas);
         bringInEyes();
         fillBoard();
-        backgroundMusic.src = "/snowflake.mp3";
+        backgroundMusic.src = "snowflake.mp3";
         backgroundMusic.play();
       }
 });
