@@ -221,7 +221,6 @@ function closeEye(startX, startY, intervalTimeout, matrixRow, matrixColumn) {
 
     let i = 0;
     let droop = startY-50;
-    console.log('inside close eye');
     let intervalID = setInterval(drawNextEyeState, 5);
     function drawNextEyeState() {
       if (i === 100) {
@@ -245,13 +244,9 @@ function closeEyeSlowly(startX, startY, matrixRow, matrixColumn) {
 
     eyesMatrix[closingPos[0]][closingPos[1]].closing = true;
 
-    
-
-    console.log('inside close eye slowly');
     preventClick[matrixRow][matrixColumn] = true;
     let intervalTimeout = setTimeout(startClosingEye, 1000);
     function startClosingEye() {
-        console.log('inside timeout');
         eyesMatrix[closingPos[0]][closingPos[1]].closing = false;
         preventClick[matrixRow][matrixColumn] = true;
         closeEye(startX, startY, intervalTimeout, matrixRow, matrixColumn);
@@ -537,10 +532,7 @@ canvas.addEventListener ('click', function(event){
 
         matrixRow = matrixPosition[0];
         matrixColumn = matrixPosition[1];
-        console.log(preventClick);
         if (eyesMatrix[matrixRow][matrixColumn].found === false && preventClick[matrixRow][matrixColumn] === false) {
-            console.log(matrixRow, matrixColumn);
-            console.log(preventClick[matrixRow][matrixColumn]);
             moveStarted = !moveStarted;
 
             if (moveStarted) {
