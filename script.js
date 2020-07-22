@@ -11,7 +11,14 @@ canvas.height = "600";
 let firstEye;
 let secondEye;
 
-let preventClick = false;
+let preventClick = [];
+
+for (let i=0; i< 4; i++){
+    preventClick[i] = []
+   for (let j=0; j < 4; j++){
+     preventClick[i][j] = false
+  }
+}
 
 let soundOn = true;
 
@@ -209,13 +216,18 @@ ANIMATIONS
 */
 
 // animate eye from open to closed
-function closeEye(startX, startY) {
+function closeEye(startX, startY, intervalTimeout, matrixRow, matrixColumn) {
+    let closingPos = checkClickPosition(startX, startY);
+
     let i = 0;
     let droop = startY-50;
+    console.log('inside close eye');
     let intervalID = setInterval(drawNextEyeState, 5);
     function drawNextEyeState() {
       if (i === 100) {
         clearInterval(intervalID);
+        clearTimeout(intervalTimeout);
+        preventClick[matrixRow][matrixColumn] = false;
       } else {
         drawClosedEye(startX, startY, droop);
         i++;
@@ -225,7 +237,7 @@ function closeEye(startX, startY) {
 } 
 
 // add 1 sec delay before eye starts closing
-function closeEyeSlowly(startX, startY) {
+function closeEyeSlowly(startX, startY, matrixRow, matrixColumn) {
 
     let closingPos = checkClickPosition(startX, startY);
 
@@ -233,14 +245,16 @@ function closeEyeSlowly(startX, startY) {
 
     eyesMatrix[closingPos[0]][closingPos[1]].closing = true;
 
-    preventClick = true;
+    
 
-    setTimeout(startClosingEye, 1000);
+    console.log('inside close eye slowly');
+    preventClick[matrixRow][matrixColumn] = true;
+    let intervalTimeout = setTimeout(startClosingEye, 1000);
     function startClosingEye() {
-        
+        console.log('inside timeout');
         eyesMatrix[closingPos[0]][closingPos[1]].closing = false;
-        preventClick = false;
-        closeEye(startX, startY);
+        preventClick[matrixRow][matrixColumn] = true;
+        closeEye(startX, startY, intervalTimeout, matrixRow, matrixColumn);
     }
     }
 }
@@ -508,7 +522,6 @@ canvas.addEventListener ('click', function(event){
     let canvasTop = canvas.offsetTop + canvas.clientTop;
     let x = event.pageX - canvasLeft;
     let y = event.pageY - canvasTop;
-    console.log(x, y);
   
     let matrixPosition = checkClickPosition(x, y);
 
@@ -524,16 +537,17 @@ canvas.addEventListener ('click', function(event){
 
         matrixRow = matrixPosition[0];
         matrixColumn = matrixPosition[1];
-
-        if (eyesMatrix[matrixRow][matrixColumn].found === false && preventClick === false) {
-
+        console.log(preventClick);
+        if (eyesMatrix[matrixRow][matrixColumn].found === false && preventClick[matrixRow][matrixColumn] === false) {
+            console.log(matrixRow, matrixColumn);
+            console.log(preventClick[matrixRow][matrixColumn]);
             moveStarted = !moveStarted;
 
             if (moveStarted) {
                 firstEye = eyesMatrix[matrixRow][matrixColumn];
             
                 openEye(firstEye.x, firstEye.y, firstEye.color);
-                firstEye.state = 'open';
+                firstEye.closing = false;
                 playClickSound();
                 moves ++;
             }
@@ -541,7 +555,7 @@ canvas.addEventListener ('click', function(event){
                 secondEye = eyesMatrix[matrixRow][matrixColumn];
 
                 openEye(secondEye.x, secondEye.y, secondEye.color);
-                secondEye.state = 'open';
+                secondEye.closing = false;
                 playClickSound();
 
                 if (firstEye.color === secondEye.color && firstEye != secondEye) {
@@ -553,8 +567,8 @@ canvas.addEventListener ('click', function(event){
                     };
                 }
                 else  {
-                    closeEyeSlowly(firstEye.x, firstEye.y);
-                    closeEyeSlowly(secondEye.x, secondEye.y);
+                    closeEyeSlowly(firstEye.x, firstEye.y, matrixRow, matrixColumn);
+                    closeEyeSlowly(secondEye.x, secondEye.y, matrixRow, matrixColumn);
                 }
             
             }
