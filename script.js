@@ -21,12 +21,13 @@ let clickSound = new Audio("/click.mp3");
 clickSound.volume = 0.1;
 
 
+
+// make sure click is only played when sound is turned on
 function playClickSound() {
     if (soundOn === true) {
         clickSound.play();
     }
 }
-
 
 // start game
 eyeLogo.addEventListener('click', function(event){
@@ -42,7 +43,18 @@ eyeLogo.addEventListener('click', function(event){
       }
 });
 
+// create context, fill canvas in black
 let ctx = canvas.getContext('2d');
+
+
+//add responsiveness for mobile version
+let mql = window.matchMedia('(max-width: 600px)');
+if (mql.matches) {
+    canvas.width = canvas.width*0.60;
+    canvas.height = canvas.height*0.60;
+    ctx.scale(0.60, 0.60);
+}
+
 
 ctx.fillStyle = 'black';
 ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -58,7 +70,6 @@ function displayMoves() {
     ctx.fillText(`moves: ${moves}`, 50, 550);
 }
 
-
 // show sound switch on screen
 function displaySoundSwitch(state) {
     ctx.beginPath();
@@ -69,7 +80,6 @@ function displaySoundSwitch(state) {
     ctx.fillText(`turn sound ${state}`, 430, 550);
 }
 
-
 // create sound off/on switch
 function turnSoundOnOff() {
     if (soundOn === true) {
@@ -77,7 +87,6 @@ function turnSoundOnOff() {
         backgroundMusic.pause();
         soundOn = false;
     }
-
     else {
         displaySoundSwitch('off');
         backgroundMusic.play();
@@ -147,12 +156,10 @@ function shuffle(array) {
 }
 
 
+
 // define eye colours
 let eyeColors = ['pink', 'blue', 'orange', 'purple', 'turquoise', 'coral', 'palegreen', 'gold'];
-
 let eyes = [];
-
-
 
 // create array of 16 objects of class Eye, two each of the 8 colours
 function createEyes() {
@@ -181,10 +188,13 @@ function arrangeIntoMatrix(arr) {
     return [row0, row1, row2, row3];
 }
 
-
 let eyesMatrix = arrangeIntoMatrix(eyes);
 
 
+
+/*
+ANIMATIONS
+*/
 
 // animate eye from open to closed
 function closeEye(startX, startY) {
@@ -224,13 +234,13 @@ function closeEyeSlowly(startX, startY) {
 }
 
 
-
+// open eye
 function openEye(startX, startY, color) {
     drawEye(startX, startY, color);
 }
 
 
-
+// make one closed eye after the after appear on screen
 function bringInEyes() {
     
     let x = 50;
@@ -256,9 +266,8 @@ function bringInEyes() {
 
 
 
-// place eyes on board
+// place open eyes with closed eyes on top on board
 function fillBoard () {
-
 
     setTimeout(fillEyes, 800);
     function fillEyes() {
@@ -284,6 +293,7 @@ function fillBoard () {
 }
 
 
+// draw one row of eye lids
 function drawRowOfLids (y) {
     let x = 50; 
     
@@ -298,7 +308,7 @@ function drawRowOfLids (y) {
      }
 }
 
-
+// move row of eye lids move down the screen, erasing anything above them
 function dropEyes() {
     let i = 0;
     let y = 175;
@@ -320,7 +330,7 @@ function dropEyes() {
 }
 
 
-
+// fill the board with eyes all of the same, randomly picked color
 function drawUnicolorEyes() {  
     let i = 0;
     let j = 0;
@@ -330,7 +340,6 @@ function drawUnicolorEyes() {
     let randomColor = eyeColors[Math.floor(Math.random()*8)];
 
     setTimeout(drawRandomEyes, 500);
-
     function drawRandomEyes() {
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 4; j++) {
@@ -344,6 +353,7 @@ function drawUnicolorEyes() {
     }
 }
 
+// close all eyes on the board at the same time
 function closeAllEyes() {
     let i = 0;
     let j = 0;
@@ -362,17 +372,19 @@ function closeAllEyes() {
     y += 10;
 }
 
-
+// animation to be played at the end of the game
 function endAnimationEyes() {
     drawUnicolorEyes();
     closeAllEyes();
-    dropEyes();
+    if (!mql.matches) {
+        dropEyes();
+    }
 }
-
 
 
 // check which row and column was clicked
 function checkClickPosition(mouseX, mouseY) {
+
     let row;
     let column;
 
@@ -438,8 +450,6 @@ function checkIfWon() {
 
 
 
-
-
 // change from main game to game over screen
 function endGame() {
     backgroundMusic.pause();
@@ -469,7 +479,7 @@ function endGame() {
     });
 }
 
-// change game with slight delay after last pair was found
+// end game with slight delay after last pair was found
 function endGameSlowly() {
     setTimeout(frame3, 2800);
     function frame3() {
@@ -479,15 +489,21 @@ function endGameSlowly() {
 
 
 let moveStarted = false;
-// click on cards, finish move after two cards, leave open if pair, close if not
 
+// click on cards, finish move after two cards, leave open if pair, close if not
 canvas.addEventListener ('click', function(event){
     let canvasLeft = canvas.offsetLeft + canvas.clientLeft;
     let canvasTop = canvas.offsetTop + canvas.clientTop;
     let x = event.pageX - canvasLeft;
     let y = event.pageY - canvasTop;
+    console.log(x, y);
   
     let matrixPosition = checkClickPosition(x, y);
+
+    // for phones
+    if (mql.matches) {
+        matrixPosition = checkClickPosition(x*1.66, y*1.66);
+    }
 
     let matrixRow;
     let matrixColumn;
