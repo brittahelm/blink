@@ -217,7 +217,6 @@ ANIMATIONS
 
 // animate eye from open to closed
 function closeEye(startX, startY, intervalTimeout, matrixRow, matrixColumn) {
-    let closingPos = checkClickPosition(startX, startY);
 
     let i = 0;
     let droop = startY-50;
@@ -384,7 +383,7 @@ function closeAllEyes() {
 
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 4; j++) {
-            closeEyeSlowly(x, y);
+            closeEyeSlowly(x, y, i, j);
             x += 125;
         }
         x = 50;

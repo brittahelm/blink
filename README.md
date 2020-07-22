@@ -49,5 +49,7 @@ blink is a classic memory game where the player has to match pairs of eyes with 
 
 ## Links
 
+https://brittahelm.github.io/blink/
 https://github.com/brittahelm/blink
 https://trello.com/b/yBACsbJc/blink
+https://docs.google.com/presentation/d/1HmpktwqCiJLeqcXGFBWuglXDB8-xXu3OER0OHMU7WVY/edit?usp=sharing
