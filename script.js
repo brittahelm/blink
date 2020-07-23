@@ -487,8 +487,7 @@ function endGame() {
     else if (moves > highscore) {
         highscoreText = `<br>Your best game was ${highscore} moves.`;
     }
-    console.log(moves);
-    console.log(highscore);
+    
     let endText = `<h2>Well played.</h2><p>You won in ${moves} moves.${highscoreText}<br>Do you want to try again?<br><br>Click on the eye.</p>`;
     endScreen.innerHTML = endText;
     body.appendChild(endScreen);
