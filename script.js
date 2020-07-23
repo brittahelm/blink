@@ -481,9 +481,14 @@ function endGame() {
     let endScreen = document.createElement('div');
     endScreen.classList.add('game-over-screen');
     let highscoreText = '';
-    if (localStorage.getItem('highscore')) {
-        highscoreText = `<br>Your best game was ${highscore} moves.`
+    if (moves <= highscore) {
+        highscoreText = `<br>That was your best game so far.`;
     }
+    else if (moves > highscore) {
+        highscoreText = `<br>Your best game was ${highscore} moves.`;
+    }
+    console.log(moves);
+    console.log(highscore);
     let endText = `<h2>Well played.</h2><p>You won in ${moves} moves.${highscoreText}<br>Do you want to try again?<br><br>Click on the eye.</p>`;
     endScreen.innerHTML = endText;
     body.appendChild(endScreen);
@@ -517,8 +522,9 @@ function endGameSlowly() {
         localStorage.setItem('highscore', moves);
         }
     }
-
-console.log(localStorage.getItem('highscore'));
+    else {
+        localStorage.setItem('highscore', moves);
+    }
 
 }
 
