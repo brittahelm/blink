@@ -473,7 +473,7 @@ function checkIfWon() {
 // change from main game to game over screen
 function endGame() {
     backgroundMusic.pause();
-    backgroundMusic.src ="/star.mp3";
+    backgroundMusic.src ="star.mp3";
     if (soundOn === true) {
         backgroundMusic.play();
     }
@@ -487,7 +487,7 @@ function endGame() {
     else if (moves > highscore) {
         highscoreText = `<br>Your best game was ${highscore} moves.`;
     }
-    
+
     let endText = `<h2>Well played.</h2><p>You won in ${moves} moves.${highscoreText}<br>Do you want to try again?<br><br>Click on the eye.</p>`;
     endScreen.innerHTML = endText;
     body.appendChild(endScreen);
